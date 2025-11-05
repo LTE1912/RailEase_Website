@@ -1,0 +1,2167 @@
+ (cd "$(git rev-parse --show-toplevel)" && git apply --3way <<'EOF' 
+diff --git a/.env.example b/.env.example
+new file mode 100644
+index 0000000000000000000000000000000000000000..29499eb4102c584e6d518597f642c4a3e993eee7
+--- /dev/null
++++ b/.env.example
+@@ -0,0 +1 @@
++AGGREGATOR_API_KEY=demo
+diff --git a/.eslintrc.json b/.eslintrc.json
+new file mode 100644
+index 0000000000000000000000000000000000000000..db0ec5f21647341c4e8954f7c05240f61de06d7b
+--- /dev/null
++++ b/.eslintrc.json
+@@ -0,0 +1,7 @@
++{
++  "extends": ["next", "next/core-web-vitals"],
++  "rules": {
++    "react/jsx-props-no-spreading": "off",
++    "@next/next/no-img-element": "off"
++  }
++}
+diff --git a/.gitignore b/.gitignore
+new file mode 100644
+index 0000000000000000000000000000000000000000..2b48388fcef165b23fb8512640bf90a369fb72d5
+--- /dev/null
++++ b/.gitignore
+@@ -0,0 +1,10 @@
++node_modules
++.next
++out
++pnpm-lock.yaml
++yarn.lock
++package-lock.json
++.env
++.DS_Store
++coverage
++.vscode
+diff --git a/.prettierrc b/.prettierrc
+new file mode 100644
+index 0000000000000000000000000000000000000000..7d2081a95b95ad9f16cba463629a04b2ae737aa0
+--- /dev/null
++++ b/.prettierrc
+@@ -0,0 +1,5 @@
++{
++  "singleQuote": true,
++  "semi": true,
++  "trailingComma": "all"
++}
+diff --git a/README.md b/README.md
+index 21cb2dbdfbe590e7e493b8a446b96d97f34ab89a..c476259f7b62bb14e92a0eb3508b0c2bfb283de5 100644
+--- a/README.md
++++ b/README.md
+@@ -1,2 +1,57 @@
+-# RailEase_Website
+-Europe wide Ticket buying website
++# RailEase
++
++RailEase ist eine Next.js-Referenzanwendung für europaweite Zugtickets mit Schwerpunkt auf einem warmen Brand-Design, komfortabler Suche und einem Mock-Backend.
++
++## Features
++- Next.js 14 App Router mit TypeScript und Tailwind CSS
++- Markenfarben nach Vorgabe (#f9f5f2, #bc1a25, #d1656b, #e1a0a2, #eed0cf)
++- Zustand Stores für Suche & Checkout, Validierung via Zod
++- Mock-Services für Suche, Buchung, Ticket und Wallet
++- Vitest + Testing Library für Komponenten- und API-Tests
++
++## Voraussetzungen
++- Node.js 18+
++- pnpm (empfohlen), alternativ npm/yarn
++
++## Installation
++```bash
++pnpm install
++```
++
++### Entwicklung starten
++```bash
++pnpm dev
++```
++
++Die Anwendung läuft anschließend unter http://localhost:3000.
++
++### Weitere Skripte
++```bash
++pnpm build      # Produktionsbuild erzeugen
++pnpm start      # Produktionsserver starten
++pnpm lint       # ESLint prüfen
++pnpm format     # Prettier Formatierung
++pnpm test       # Vitest Tests ausführen
++pnpm typecheck  # TypeScript Typprüfung
++```
++
++### Tests
++```bash
++pnpm test
++```
++
++## Deployment
++Für ein Deployment auf Vercel genügt das Verbinden des Repos – die Standard-Build-Einstellungen (`pnpm install`, `pnpm build`) funktionieren out-of-the-box. Um Umgebungsvariablen zu definieren, siehe `.env.example`.
++
++## Environment Variablen
++```
++AGGREGATOR_API_KEY=demo
++```
++
++## Mock-Fluss
++1. Suche auf der Startseite ausführen → Weiterleitung zu `/results`
++2. Verbindung auswählen → `/checkout`
++3. Buchung abschließen → Weiterleitung `/ticket?bookingId=...`
++
++## Lizenz
++MIT
+diff --git a/next-env.d.ts b/next-env.d.ts
+new file mode 100644
+index 0000000000000000000000000000000000000000..4f11a03dc6cc37f2b5105c08f2e7b24c603ab2f4
+--- /dev/null
++++ b/next-env.d.ts
+@@ -0,0 +1,5 @@
++/// <reference types="next" />
++/// <reference types="next/image-types/global" />
++
++// NOTE: This file should not be edited
++// see https://nextjs.org/docs/basic-features/typescript for more information.
+diff --git a/next.config.mjs b/next.config.mjs
+new file mode 100644
+index 0000000000000000000000000000000000000000..9bae0b95ba78568bfc241efe1b7737ba0d754f45
+--- /dev/null
++++ b/next.config.mjs
+@@ -0,0 +1,16 @@
++/** @type {import('next').NextConfig} */
++const nextConfig = {
++  experimental: {
++    typedRoutes: true,
++  },
++  images: {
++    remotePatterns: [
++      {
++        protocol: "https",
++        hostname: "images.unsplash.com",
++      }
++    ]
++  }
++};
++
++export default nextConfig;
+diff --git a/package.json b/package.json
+new file mode 100644
+index 0000000000000000000000000000000000000000..08273929bcc0c3b0474eb188bc29ff603494a7af
+--- /dev/null
++++ b/package.json
+@@ -0,0 +1,48 @@
++{
++  "name": "railease-website",
++  "version": "1.0.0",
++  "private": true,
++  "scripts": {
++    "dev": "next dev",
++    "build": "next build",
++    "start": "next start",
++    "lint": "next lint",
++    "format": "prettier --write .",
++    "test": "vitest",
++    "typecheck": "tsc --noEmit"
++  },
++  "dependencies": {
++    "@hookform/resolvers": "^3.3.4",
++    "class-variance-authority": "^0.7.0",
++    "date-fns": "^3.3.1",
++    "lucide-react": "^0.344.0",
++    "next": "14.1.0",
++    "react": "18.2.0",
++    "react-dom": "18.2.0",
++    "react-hook-form": "^7.49.2",
++    "zustand": "^4.5.2",
++    "zod": "^3.22.4",
++    "clsx": "^2.1.0",
++    "tailwind-merge": "^2.2.1",
++    "@radix-ui/react-slot": "^1.0.2"
++  },
++  "devDependencies": {
++    "@testing-library/jest-dom": "^6.2.0",
++    "@testing-library/react": "^14.0.0",
++    "@testing-library/user-event": "^14.5.1",
++    "@types/node": "^20.12.7",
++    "@types/react": "^18.2.47",
++    "@types/react-dom": "^18.2.17",
++    "autoprefixer": "^10.4.17",
++    "eslint": "^8.57.0",
++    "eslint-config-next": "^14.1.0",
++    "jsdom": "^24.0.0",
++    "postcss": "^8.4.35",
++    "prettier": "^3.2.5",
++    "tailwindcss": "^3.4.1",
++    "typescript": "^5.3.3",
++    "vitest": "^1.4.0",
++    "tailwindcss-animate": "^1.0.7",
++    "@vitejs/plugin-react": "^4.2.1"
++  }
++}
+\ No newline at end of file
+diff --git a/postcss.config.js b/postcss.config.js
+new file mode 100644
+index 0000000000000000000000000000000000000000..12a703d900da8159c30e75acbd2c4d87ae177f62
+--- /dev/null
++++ b/postcss.config.js
+@@ -0,0 +1,6 @@
++module.exports = {
++  plugins: {
++    tailwindcss: {},
++    autoprefixer: {},
++  },
++};
+diff --git a/public/logo.png b/public/logo.png
+new file mode 100644
+index 0000000000000000000000000000000000000000..ae678db144fded214a11edf11073b560fd0a010f
+GIT binary patch
+literal 3037
+zcmcguZD><x6h800*W~siYYKj}!I3*l$Nrf~*!&^p)~{OUTy-)!6&t!Dg*oQHl})j|
+z+6mhbS~iD;{aA)laa0?}SaBORjExoi6Df2~6w3zFuA6hiqKhQmbI#43H+~@-tdzVt
+zdCz&ybDnd~P2Oo<*BB~~loL^?Y4wT?L>k^|Wb&~)vivwv#gV2J4IAG$|Jx5ILtoou
+zH2h*6jW5`Aq-;~e0_$*j-CvzYj!jHoIREpX`LC4u#bS*V*+gL?gZ|aq{~Erd90fQ;
+z7Lm!d_}&J0UyRONK37dGTi<-erp$$BG>zuAR)r~jbC*NT*?GD_2Ts>mbZ*Z<Qkg4t
+z0h2nT^){t%J)tz`Vq;mD)+QD?l)SNCGia>0(sR9Dr<*hot@T_d8v{kx{;ocyb{GTE
+zcH9+GfSC-|^4-mbGB+ZYA0^G1Zqz;S{8@-6;Qd|g;E_A5Jn%w?=Q>se9xdHjGBUZI
+zfCVVHastzt4u)(b0BSPd0Mx0fh$XIo>Oo09E^rOgV4?#h!PW4&rVCDhq2e~~K|7gO
+zaGk1xYfHDSBdfk@6^Ht=ln@$^#$7_%#B75Mulm~=CxQX+8jog4g)uXX=-F;^v=8?m
+zEnhM;{L|vCoc+1BtM#Cn$-VT)G&tB4%e7fd;K^K@a6EZyjql{{)Q6cxe^)KiqzeO=
+zE}Y@IxWkh2!>)D#LR$ss*~B6Na8IOfg@7E`8gK#R1eGBO4JF1F>QDqiea|Hhj!Yg>
+zP%K@D@a5o0fG-Kbe3{s`QD-?v&}*DV22;ZoUP6OWIm$T8QcS&y6V)QC3q6dJIk$96
+zRBkg)E`Bh<Q7obBjT0OJ(Cd2RbO9R0yO?&%i|)Mz*0fQZ_;i!NNtFFKojB&Q3v)d(
+zTV|${wluq7E!}7K2TXPwz=m<VE^Yf*2?ucdT%Xv0^%DWnCT0i%+k=_cX9JD<hVf%T
+z@PbcQe&!Y?BLUth8RU6bd(^ecww^GnAT|=9()6Qj0bMMvoAt1Hc9JnVJ>w9v@k#(j
+z$%`yptcH4LT(Y+V5aTOw4J|43aI{d94H7c)!cfi!0?axKaFMJp3;1y_jy~f2o{(f>
+z$_BEKl1!-HVTeS~1G$~)c@%b5vv6>FfS*TGg6=dxg8vzh|6R)}TBh7t^n%VBl~nQn
+z8C;r8ahh6qf2K2g8?Y!|Z2^|%0d%w2I4+v;E|)t)Hio0s6J5{bDj-Es0aq6`Dlw87
+zEK@12A8NC@Hpj%&Ryg+{Adcxdv`|U1xX^X`NFA6K)gN*WVWzoCsWYXL`B}xTZqrk0
+zAc#%J2Sqhd?QE>hQzrHv=WSo1S&`XJ*!py#v@ZKGUP76iP`VjOu``@;KM%9;%DTL`
+z0B0E>Tt*$NPn*h8NEBdTPd^R~B=g5dD5U`S_AFaRtH6|$Fcm;%8gZtF3mW^*vgQ&V
+zJ$SIqbK82d6eH|@dVl0lx^VRred7ad={8)@sa}A#<55Whiic|V(}ah>cob!hI+KmS
+zM)>&1@LS-5FkA0aV<K!;v`;B`fv5#eJVjYXL)X0%<YYiPoXTVlRePt&Hrf-n1F<}-
+zZkMHR0VQJT1DxACwUp5rW!;;#FPZB<XIMYXw&D{l3S8Oy?RPv%tM{E6F2KfDzB{5a
+zNo=!v7z2x!Hl^4OvE6|$XLNz9iSS^_x24a{l8h*~G|r3Qg--R#Aj<sIA#^;7qSIb#
+zNwrv$aglkoc~RJ{mF{AsLkf4Y{H|O<pIV!cA*km2UK*wTE`P>870VZkMaG0?0m|p9
+z>_FyvF)O<QitBF2?;o;sKv6CCeiT1i6i=y1i@4`*Ry3&Ebxj%P_LR7yS4G!m?boH6
+zQ`z4Yrh}QQJ;d!Ys2=yu^LFKdr5deC-l!(&l2cOynCqDz>nIhR8&%X4yJ6DK^Aq^d
+zh+g60Z$IpB+lO|%H>geXl|vW=Jh-UjSL|J%&YukK{N(-jUVeAiYlOe1mFrfVSeD%P
+EHv?4y7XSbN
+
+literal 0
+HcmV?d00001
+
+diff --git a/src/app/api/book/route.ts b/src/app/api/book/route.ts
+new file mode 100644
+index 0000000000000000000000000000000000000000..42265c5ef37000a8c6da4ef8ffbb9bc87175ab07
+--- /dev/null
++++ b/src/app/api/book/route.ts
+@@ -0,0 +1,16 @@
++import { NextResponse } from "next/server";
++import { randomUUID } from "crypto";
++import { bookingSchema } from "@/lib/validation/booking";
++
++export async function POST(request: Request) {
++  const body = await request.json();
++  const parsed = bookingSchema.safeParse(body);
++
++  if (!parsed.success) {
++    return NextResponse.json({ error: parsed.error.flatten() }, { status: 400 });
++  }
++
++  await new Promise((resolve) => setTimeout(resolve, 500));
++
++  return NextResponse.json({ bookingId: randomUUID() });
++}
+diff --git a/src/app/api/offer/route.ts b/src/app/api/offer/route.ts
+new file mode 100644
+index 0000000000000000000000000000000000000000..898847da777cfe25c5bedc856db9df746cc74c56
+--- /dev/null
++++ b/src/app/api/offer/route.ts
+@@ -0,0 +1,15 @@
++import { NextResponse } from "next/server";
++
++export async function GET(request: Request) {
++  const url = new URL(request.url);
++  const offerId = url.searchParams.get("offerId");
++  const price = Number(url.searchParams.get("price") ?? "0");
++
++  if (!offerId) {
++    return NextResponse.json({ error: "offerId erforderlich" }, { status: 400 });
++  }
++
++  await new Promise((resolve) => setTimeout(resolve, 200));
++
++  return NextResponse.json({ offerId, valid: true, price });
++}
+diff --git a/src/app/api/search/route.ts b/src/app/api/search/route.ts
+new file mode 100644
+index 0000000000000000000000000000000000000000..45149fdcacf0c53ef36a81692bd6099ee2eb5a72
+--- /dev/null
++++ b/src/app/api/search/route.ts
+@@ -0,0 +1,35 @@
++import { NextResponse } from "next/server";
++import { searchSchema } from "@/lib/validation/search";
++import { fetchAggregatedOffers } from "@/services/providers";
++
++export const revalidate = 60;
++
++function delay(min = 600, max = 900) {
++  const ms = Math.floor(Math.random() * (max - min + 1)) + min;
++  return new Promise((resolve) => setTimeout(resolve, ms));
++}
++
++export async function GET(request: Request) {
++  const url = new URL(request.url);
++  const parsed = searchSchema.safeParse({
++    from: url.searchParams.get("from") ?? "",
++    to: url.searchParams.get("to") ?? "",
++    departureDate: url.searchParams.get("departureDate") ?? "",
++    returnDate: url.searchParams.get("returnDate") ?? "",
++    passengers: url.searchParams.get("passengers") ?? "1",
++    travelClass: url.searchParams.get("travelClass") ?? "economy",
++    directOnly: url.searchParams.get("directOnly") === "true",
++  });
++
++  if (!parsed.success) {
++    return NextResponse.json({ error: parsed.error.flatten() }, { status: 400 });
++  }
++
++  await delay();
++  const offers = await fetchAggregatedOffers(parsed.data);
++  const filtered = parsed.data.directOnly ? offers.filter((offer) => offer.direct) : offers;
++
++  const response = NextResponse.json({ offers: filtered });
++  response.headers.set("Cache-Control", "s-maxage=60, stale-while-revalidate=30");
++  return response;
++}
+diff --git a/src/app/api/ticket/route.ts b/src/app/api/ticket/route.ts
+new file mode 100644
+index 0000000000000000000000000000000000000000..56e3a05f1a873236108944cfa6579f8746b6d807
+--- /dev/null
++++ b/src/app/api/ticket/route.ts
+@@ -0,0 +1,32 @@
++import { NextResponse } from "next/server";
++import { Buffer } from "buffer";
++import { generateTicketPdf } from "@/services/pdf";
++
++function createQrData(bookingId: string) {
++  return `data:image/svg+xml;base64,${Buffer.from(`<svg xmlns='http://www.w3.org/2000/svg' width='200' height='200'><rect width='200' height='200' fill='#f9f5f2'/><text x='50%' y='50%' dominant-baseline='middle' text-anchor='middle' font-size='20' fill='#bc1a25'>QR</text></svg>`).toString("base64")}`;
++}
++
++export async function GET(request: Request) {
++  const url = new URL(request.url);
++  const bookingId = url.searchParams.get("bookingId");
++
++  if (!bookingId) {
++    return NextResponse.json({ error: "bookingId erforderlich" }, { status: 400 });
++  }
++
++  const pdfUrl = await generateTicketPdf(bookingId);
++
++  const ticket = {
++    bookingId,
++    passengerName: "RailEase Gast",
++    route: "Berlin Hbf → Paris Gare du Nord",
++    departure: "12.06.2024 • 08:46",
++    arrival: "12.06.2024 • 16:05",
++    coach: "12",
++    seat: "46A",
++    qrData: createQrData(bookingId),
++    pdfUrl,
++  };
++
++  return NextResponse.json({ ticket });
++}
+diff --git a/src/app/checkout/CheckoutContent.tsx b/src/app/checkout/CheckoutContent.tsx
+new file mode 100644
+index 0000000000000000000000000000000000000000..f18be5185a70fdcd4aede1a8522aeffacb9f3fe6
+--- /dev/null
++++ b/src/app/checkout/CheckoutContent.tsx
+@@ -0,0 +1,194 @@
++"use client";
++
++import { useState } from "react";
++import { useRouter } from "next/navigation";
++import { useForm } from "react-hook-form";
++import { zodResolver } from "@hookform/resolvers/zod";
++import { bookingSchema, type BookingPayload } from "@/lib/validation/booking";
++import { useCheckoutStore } from "@/state/checkoutStore";
++import { Card } from "@/components/Card";
++import { Button } from "@/components/Button";
++import { Input } from "@/components/Input";
++import { Select } from "@/components/Select";
++import { EmptyState } from "@/components/EmptyState";
++import { format } from "date-fns";
++import { de } from "date-fns/locale";
++import { formatCurrency, formatDuration } from "@/lib/utils";
++
++const seatOptions = [
++  { value: "fenster", label: "Fensterplatz" },
++  { value: "gang", label: "Gangplatz" },
++  { value: "egal", label: "Keine Präferenz" },
++];
++
++export function CheckoutContent() {
++  const router = useRouter();
++  const { offer, setBookingId } = useCheckoutStore();
++  const [submitting, setSubmitting] = useState(false);
++
++  const form = useForm<BookingPayload>({
++    resolver: zodResolver(bookingSchema),
++    defaultValues: {
++      offerId: offer?.id ?? "",
++      name: "",
++      email: "",
++      passengers: 1,
++      travelClass: offer?.travelClass ?? "economy",
++      seatPreference: "egal",
++      acceptTerms: false,
++    },
++  });
++
++  if (!offer) {
++    return (
++      <EmptyState
++        title="Keine Verbindung gewählt"
++        description="Bitte wähle zunächst eine Verbindung aus den Suchergebnissen."
++        action={
++          <Button asChild>
++            <a href="/results">Zurück zu den Ergebnissen</a>
++          </Button>
++        }
++      />
++    );
++  }
++
++  async function onSubmit(data: BookingPayload) {
++    setSubmitting(true);
++    try {
++      const response = await fetch("/api/book", {
++        method: "POST",
++        headers: { "Content-Type": "application/json" },
++        body: JSON.stringify({ ...data, offerId: offer.id }),
++      });
++      if (!response.ok) {
++        throw new Error("Buchung fehlgeschlagen");
++      }
++      const result = await response.json();
++      setBookingId(result.bookingId);
++      router.push(`/ticket?bookingId=${result.bookingId}`);
++    } catch (error) {
++      form.setError("root", { message: (error as Error).message });
++    } finally {
++      setSubmitting(false);
++    }
++  }
++
++  return (
++    <div className="grid gap-8 md:grid-cols-[1.1fr_0.9fr]">
++      <Card>
++        <h2 className="text-xl font-semibold text-foreground">Zahlungsdetails</h2>
++        <form onSubmit={form.handleSubmit(onSubmit)} className="mt-6 space-y-4">
++          <input type="hidden" value={offer.id} {...form.register("offerId")} />
++          <div>
++            <label className="mb-1 block text-sm font-medium text-foreground" htmlFor="name">
++              Name
++            </label>
++            <Input id="name" {...form.register("name")} />
++            {form.formState.errors.name ? (
++              <p className="mt-1 text-xs text-primary">{form.formState.errors.name.message}</p>
++            ) : null}
++          </div>
++          <div>
++            <label className="mb-1 block text-sm font-medium text-foreground" htmlFor="email">
++              E-Mail
++            </label>
++            <Input id="email" type="email" {...form.register("email")} />
++            {form.formState.errors.email ? (
++              <p className="mt-1 text-xs text-primary">{form.formState.errors.email.message}</p>
++            ) : null}
++          </div>
++          <div className="grid gap-4 md:grid-cols-2">
++            <div>
++              <label className="mb-1 block text-sm font-medium text-foreground" htmlFor="passengers">
++                Passagiere
++              </label>
++              <Input id="passengers" type="number" min={1} max={8} {...form.register("passengers", { valueAsNumber: true })} />
++              {form.formState.errors.passengers ? (
++                <p className="mt-1 text-xs text-primary">{form.formState.errors.passengers.message}</p>
++              ) : null}
++            </div>
++            <div>
++              <label className="mb-1 block text-sm font-medium text-foreground" htmlFor="travelClass">
++                Klasse
++              </label>
++              <Select id="travelClass" {...form.register("travelClass")}>
++                <option value="economy">Economy</option>
++                <option value="comfort">Comfort</option>
++                <option value="first">First</option>
++              </Select>
++              {form.formState.errors.travelClass ? (
++                <p className="mt-1 text-xs text-primary">{form.formState.errors.travelClass.message}</p>
++              ) : null}
++            </div>
++          </div>
++          <div>
++            <label className="mb-1 block text-sm font-medium text-foreground" htmlFor="seatPreference">
++              Sitzpräferenz
++            </label>
++            <Select id="seatPreference" {...form.register("seatPreference")}>
++              {seatOptions.map((seat) => (
++                <option key={seat.value} value={seat.value}>
++                  {seat.label}
++                </option>
++              ))}
++            </Select>
++            {form.formState.errors.seatPreference ? (
++              <p className="mt-1 text-xs text-primary">{form.formState.errors.seatPreference.message}</p>
++            ) : null}
++          </div>
++          <label className="flex items-start gap-3 text-sm text-foreground">
++            <input
++              type="checkbox"
++              className="mt-1 h-5 w-5 rounded border border-border text-primary focus-visible:ring-primary"
++              {...form.register("acceptTerms")}
++            />
++            <span>
++              Ich akzeptiere die Allgemeinen Geschäftsbedingungen sowie die Bedingungen der Bahnunternehmen.
++            </span>
++          </label>
++          {form.formState.errors.acceptTerms ? (
++            <p className="text-xs text-primary">{form.formState.errors.acceptTerms.message}</p>
++          ) : null}
++          {form.formState.errors.root ? (
++            <p className="text-sm text-primary">{form.formState.errors.root.message}</p>
++          ) : null}
++          <Button type="submit" size="lg" className="w-full" disabled={submitting}>
++            {submitting ? "Verarbeite Zahlung..." : "Jetzt buchen"}
++          </Button>
++        </form>
++      </Card>
++      <Card className="bg-tint/40">
++        <h2 className="text-xl font-semibold text-foreground">Deine Auswahl</h2>
++        <div className="mt-4 space-y-3 text-sm text-foreground/80">
++          <p>
++            <span className="font-semibold text-foreground">Abfahrt:</span>{" "}
++            {format(new Date(offer.departure), "dd.MM.yyyy HH:mm", { locale: de })}
++          </p>
++          <p>
++            <span className="font-semibold text-foreground">Ankunft:</span>{" "}
++            {format(new Date(offer.arrival), "dd.MM.yyyy HH:mm", { locale: de })}
++          </p>
++          <p>
++            <span className="font-semibold text-foreground">Dauer:</span> {formatDuration(offer.durationMinutes)}
++          </p>
++          <p>
++            <span className="font-semibold text-foreground">Preis:</span> {formatCurrency(offer.price, offer.currency)}
++          </p>
++          <ul className="mt-4 space-y-2 rounded-2xl bg-white/60 p-4">
++            {offer.segments.map((segment) => (
++              <li key={segment.train}>
++                <p className="font-medium text-foreground">
++                  {segment.from} → {segment.to}
++                </p>
++                <p className="text-xs text-muted">
++                  {format(new Date(segment.departure), "HH:mm", { locale: de })} – {format(new Date(segment.arrival), "HH:mm", { locale: de })} • {segment.train}
++                </p>
++              </li>
++            ))}
++          </ul>
++        </div>
++      </Card>
++    </div>
++  );
++}
+diff --git a/src/app/checkout/page.tsx b/src/app/checkout/page.tsx
+new file mode 100644
+index 0000000000000000000000000000000000000000..686e5f621c9e56b9626be97c1de0e5b90a47f3ae
+--- /dev/null
++++ b/src/app/checkout/page.tsx
+@@ -0,0 +1,15 @@
++import { CheckoutContent } from "./CheckoutContent";
++
++export default function CheckoutPage() {
++  return (
++    <div className="space-y-6">
++      <div>
++        <h1 className="text-3xl font-semibold text-foreground">Checkout</h1>
++        <p className="mt-2 text-sm text-foreground/70">
++          Prüfe deine Angaben und buche deine Fahrt mit RailEase.
++        </p>
++      </div>
++      <CheckoutContent />
++    </div>
++  );
++}
+diff --git a/src/app/globals.css b/src/app/globals.css
+new file mode 100644
+index 0000000000000000000000000000000000000000..54926c3e284c8e7d9f13ef70b0529d57f8e87f3b
+--- /dev/null
++++ b/src/app/globals.css
+@@ -0,0 +1,40 @@
++@tailwind base;
++@tailwind components;
++@tailwind utilities;
++
++:root {
++  --background: 249 245 242;
++  --foreground: 17 24 39;
++  --primary: 188 26 37;
++  --primary-foreground: 255 255 255;
++  --accent: 209 101 107;
++  --accent-foreground: 17 24 39;
++  --tint: 238 208 207;
++  --tint-foreground: 17 24 39;
++  --muted: 225 160 162;
++  --border: 238 208 207;
++  --card: 255 255 255;
++}
++
++body {
++  @apply bg-background text-foreground font-sans;
++}
++
++a {
++  @apply text-primary underline-offset-4 hover:underline;
++}
++
++button:focus-visible,
++input:focus-visible,
++select:focus-visible,
++textarea:focus-visible {
++  @apply outline-none ring-2 ring-primary ring-offset-2 ring-offset-background;
++}
++
++::-moz-selection {
++  @apply bg-primary text-white;
++}
++
++::selection {
++  @apply bg-primary text-white;
++}
+diff --git a/src/app/layout.tsx b/src/app/layout.tsx
+new file mode 100644
+index 0000000000000000000000000000000000000000..32ce9f3390743864d60fe2043c2ddd774f1bcb95
+--- /dev/null
++++ b/src/app/layout.tsx
+@@ -0,0 +1,24 @@
++import type { Metadata } from "next";
++import { Inter } from "next/font/google";
++import "./globals.css";
++import { Navbar } from "@/components/Navbar";
++import { Footer } from "@/components/Footer";
++
++const inter = Inter({ subsets: ["latin"], display: "swap" });
++
++export const metadata: Metadata = {
++  title: "RailEase – Europas Bahnreisen neu gedacht",
++  description: "Vergleiche und buche europaweite Zugtickets mit RailEase.",
++};
++
++export default function RootLayout({ children }: { children: React.ReactNode }) {
++  return (
++    <html lang="de" className="bg-background">
++      <body className={`${inter.className} min-h-screen bg-background text-foreground`}>
++        <Navbar />
++        <main className="mx-auto min-h-[70vh] w-full max-w-6xl px-6 py-12">{children}</main>
++        <Footer />
++      </body>
++    </html>
++  );
++}
+diff --git a/src/app/page.tsx b/src/app/page.tsx
+new file mode 100644
+index 0000000000000000000000000000000000000000..0e3e36ab8cbd36bbdfc8acc6ea13867e556b5745
+--- /dev/null
++++ b/src/app/page.tsx
+@@ -0,0 +1,81 @@
++import Image from "next/image";
++import Link from "next/link";
++import { SearchForm } from "@/components/SearchForm";
++import { Card } from "@/components/Card";
++import { Button } from "@/components/Button";
++import { Badge } from "@/components/Badge";
++import { Train, Clock, ShieldCheck } from "lucide-react";
++
++const benefits = [
++  {
++    title: "Europäische Vielfalt",
++    description: "Alle relevanten Bahnunternehmen in einem warmen, klaren Interface.",
++    icon: Train,
++  },
++  {
++    title: "Intelligente Planung",
++    description: "Direktverbindungen oder clevere Umstiege – RailEase findet die beste Option.",
++    icon: Clock,
++  },
++  {
++    title: "Sicher buchen",
++    description: "Transparente Preise, Schutz nach EU-Fahrgastrechten und Wallet-Integration.",
++    icon: ShieldCheck,
++  },
++];
++
++export default function HomePage() {
++  return (
++    <div className="space-y-16">
++      <section className="grid gap-10 rounded-3xl bg-tint/40 p-10 md:grid-cols-2 md:items-center">
++        <div>
++          <Badge className="bg-primary/10 text-primary">Neu: RailEase</Badge>
++          <h1 className="mt-6 text-4xl font-semibold tracking-tight text-foreground md:text-5xl">
++            Die smarte Plattform für europaweite Zugtickets
++          </h1>
++          <p className="mt-4 text-lg text-foreground/80">
++            Plane, vergleiche und buche deine Reise mit einem Fokus auf Komfort, Nachhaltigkeit und Transparenz.
++          </p>
++          <div className="mt-6 flex flex-wrap items-center gap-3">
++            <Button asChild size="lg">
++              <Link href="#suche">Jetzt Verbindung finden</Link>
++            </Button>
++            <Button asChild variant="outline" size="lg">
++              <Link href="/results">Angebote ansehen</Link>
++            </Button>
++          </div>
++        </div>
++        <div className="relative">
++          <div className="absolute inset-0 rounded-full bg-primary/10 blur-3xl" aria-hidden="true" />
++          <Image
++            src="https://images.unsplash.com/photo-1489515217757-5fd1be406fef?w=800"
++            alt="Moderner Hochgeschwindigkeitszug"
++            width={640}
++            height={480}
++            className="relative z-10 rounded-3xl shadow-soft"
++          />
++        </div>
++      </section>
++
++      <section id="suche" className="rounded-3xl bg-white p-8 shadow-soft">
++        <h2 className="text-2xl font-semibold text-foreground">Deine Wunschfahrt</h2>
++        <p className="mt-2 text-sm text-foreground/70">
++          Flexible Optionen für Hin- und Rückfahrten sowie Mitreisende.
++        </p>
++        <div className="mt-6">
++          <SearchForm inline />
++        </div>
++      </section>
++
++      <section className="grid gap-6 md:grid-cols-3">
++        {benefits.map((benefit) => (
++          <Card key={benefit.title} className="bg-tint/50">
++            <benefit.icon className="h-10 w-10 text-primary" aria-hidden="true" />
++            <h3 className="mt-4 text-xl font-semibold text-foreground">{benefit.title}</h3>
++            <p className="mt-2 text-sm text-foreground/70">{benefit.description}</p>
++          </Card>
++        ))}
++      </section>
++    </div>
++  );
++}
+diff --git a/src/app/results/ResultsContent.tsx b/src/app/results/ResultsContent.tsx
+new file mode 100644
+index 0000000000000000000000000000000000000000..511633f6cb01466c1cfccf36bfc9270af48e4050
+--- /dev/null
++++ b/src/app/results/ResultsContent.tsx
+@@ -0,0 +1,113 @@
++"use client";
++
++import { useEffect, useMemo, useState } from "react";
++import { useSearchParams } from "next/navigation";
++import { Filters, type FilterState } from "@/components/Filters";
++import { ResultCard } from "@/components/ResultCard";
++import { Skeleton } from "@/components/Skeleton";
++import { EmptyState } from "@/components/EmptyState";
++import { useSearchStore } from "@/state/searchStore";
++import type { Offer } from "@/types";
++import type { SearchFormValues } from "@/lib/validation/search";
++
++export function ResultsContent() {
++  const params = useSearchParams();
++  const [filteredOffers, setFilteredOffers] = useState<Offer[]>([]);
++  const { setResults, setLoading, setError, results, loading, error, setCriteria } = useSearchStore();
++
++  useEffect(() => {
++    const controller = new AbortController();
++    async function fetchResults() {
++      setLoading(true);
++      setError(undefined);
++      try {
++        const query = params.toString();
++        if (params.size > 0) {
++          const criteria = Object.fromEntries(params.entries());
++          setCriteria({
++            from: String(criteria.from ?? ""),
++            to: String(criteria.to ?? ""),
++            departureDate: String(criteria.departureDate ?? ""),
++            returnDate: criteria.returnDate ? String(criteria.returnDate) : "",
++            passengers: criteria.passengers ? Number(criteria.passengers) : 1,
++            travelClass: (criteria.travelClass as SearchFormValues["travelClass"]) ?? "economy",
++            directOnly: criteria.directOnly === "true",
++          });
++        }
++        const response = await fetch(`/api/search?${query}`, {
++          signal: controller.signal,
++          cache: "no-store",
++        });
++        if (!response.ok) {
++          throw new Error("Fehler beim Laden der Angebote");
++        }
++        const data = await response.json();
++        setResults(data.offers ?? []);
++      } catch (err) {
++        if ((err as Error).name === "AbortError") return;
++        setError((err as Error).message);
++      } finally {
++        setLoading(false);
++      }
++    }
++
++    fetchResults();
++    return () => controller.abort();
++  }, [params, setCriteria, setError, setLoading, setResults]);
++
++  const [filterState, setFilterState] = useState<FilterState>({ sortBy: "price", directOnly: false });
++
++  useEffect(() => {
++    let data = [...results];
++    if (filterState.directOnly) {
++      data = data.filter((offer) => offer.direct);
++    }
++    data.sort((a, b) => {
++      switch (filterState.sortBy) {
++        case "duration":
++          return a.durationMinutes - b.durationMinutes;
++        case "departure":
++          return new Date(a.departure).getTime() - new Date(b.departure).getTime();
++        case "arrivals":
++          return new Date(a.arrival).getTime() - new Date(b.arrival).getTime();
++        case "price":
++        default:
++          return a.price - b.price;
++      }
++    });
++    setFilteredOffers(data);
++  }, [filterState, results]);
++
++  const skeletons = useMemo(() => Array.from({ length: 4 }), []);
++
++  return (
++    <div className="grid gap-6 md:grid-cols-[1fr_320px]">
++      <div className="space-y-4" aria-live="polite">
++        {loading
++          ? skeletons.map((_, idx) => <Skeleton key={idx} className="h-40 w-full" />)
++          : null}
++        {!loading && error ? (
++          <EmptyState title="Ups!" description={error} />
++        ) : null}
++        {!loading && !error && filteredOffers.length === 0 ? (
++          <EmptyState
++            title="Keine Verbindungen gefunden"
++            description="Passe deine Filter an oder prüfe ein anderes Datum."
++          />
++        ) : null}
++        {!loading && !error
++          ? filteredOffers.map((offer) => <ResultCard key={offer.id} offer={offer} />)
++          : null}
++      </div>
++      <aside className="space-y-4">
++        <Filters onChange={setFilterState} initialDirectOnly={params.get("directOnly") === "true"} />
++        <div className="rounded-2xl bg-tint/40 p-4 text-sm text-foreground/80">
++          <p className="font-semibold text-foreground">Hinweis</p>
++          <p className="mt-1">
++            Preise werden alle 60 Sekunden aktualisiert. Verfügbarkeit kann variieren.
++          </p>
++        </div>
++      </aside>
++    </div>
++  );
++}
+diff --git a/src/app/results/page.tsx b/src/app/results/page.tsx
+new file mode 100644
+index 0000000000000000000000000000000000000000..de753bd66a14b6d9ee6b07e039e2cb7c76dde61a
+--- /dev/null
++++ b/src/app/results/page.tsx
+@@ -0,0 +1,15 @@
++import { ResultsContent } from "./ResultsContent";
++
++export default function ResultsPage() {
++  return (
++    <div className="space-y-6">
++      <div>
++        <h1 className="text-3xl font-semibold text-foreground">Suchergebnisse</h1>
++        <p className="mt-2 text-sm text-foreground/70">
++          Wir zeigen dir die besten verfügbaren Verbindungen für deine Auswahl.
++        </p>
++      </div>
++      <ResultsContent />
++    </div>
++  );
++}
+diff --git a/src/app/ticket/TicketContent.tsx b/src/app/ticket/TicketContent.tsx
+new file mode 100644
+index 0000000000000000000000000000000000000000..095890d3f572aa85412ffa35c2cb97c214d79db2
+--- /dev/null
++++ b/src/app/ticket/TicketContent.tsx
+@@ -0,0 +1,108 @@
++"use client";
++
++import { useEffect, useState } from "react";
++import { useSearchParams } from "next/navigation";
++import { Card } from "@/components/Card";
++import { Button } from "@/components/Button";
++import { EmptyState } from "@/components/EmptyState";
++import type { TicketDetails } from "@/types";
++import { addToWallet } from "@/services/wallet";
++
++export function TicketContent() {
++  const params = useSearchParams();
++  const bookingId = params.get("bookingId");
++  const [ticket, setTicket] = useState<TicketDetails | null>(null);
++  const [loading, setLoading] = useState(false);
++  const [error, setError] = useState<string | undefined>();
++  const [walletStatus, setWalletStatus] = useState<string | null>(null);
++
++  useEffect(() => {
++    if (!bookingId) return;
++    let mounted = true;
++    async function loadTicket() {
++      setLoading(true);
++      setError(undefined);
++      try {
++        const response = await fetch(`/api/ticket?bookingId=${bookingId}`, { cache: "no-store" });
++        if (!response.ok) {
++          throw new Error("Ticket konnte nicht geladen werden");
++        }
++        const data = await response.json();
++        if (mounted) {
++          setTicket(data.ticket);
++        }
++      } catch (err) {
++        if (mounted) {
++          setError((err as Error).message);
++        }
++      } finally {
++        if (mounted) {
++          setLoading(false);
++        }
++      }
++    }
++
++    loadTicket();
++    return () => {
++      mounted = false;
++    };
++  }, [bookingId]);
++
++  async function handleWallet() {
++    if (!ticket) return;
++    setWalletStatus("Wird hinzugefügt...");
++    const result = await addToWallet(ticket.bookingId);
++    if (result.success) {
++      setWalletStatus("Zum Wallet hinzugefügt");
++    }
++  }
++
++  if (!bookingId) {
++    return <EmptyState title="Keine Buchung" description="Bitte gib eine gültige Buchungsnummer an." />;
++  }
++
++  if (loading) {
++    return <Card className="h-72 animate-pulse" />;
++  }
++
++  if (error || !ticket) {
++    return <EmptyState title="Ticket nicht verfügbar" description={error ?? "Versuche es später erneut."} />;
++  }
++
++  return (
++    <Card className="space-y-6 bg-tint/40">
++      <div className="flex flex-wrap items-center justify-between gap-4">
++        <div>
++          <p className="text-sm uppercase tracking-wide text-muted">Buchungsnummer</p>
++          <h2 className="text-2xl font-semibold text-foreground">{ticket.bookingId}</h2>
++        </div>
++        <Button variant="outline" onClick={() => window.open(ticket.pdfUrl, "_blank")}>PDF laden</Button>
++      </div>
++      <div className="grid gap-6 md:grid-cols-[200px_1fr] md:items-center">
++        <div className="flex justify-center">
++          <img src={ticket.qrData} alt="Ticket QR Code" className="h-48 w-48 rounded-2xl border border-border bg-white p-4" />
++        </div>
++        <div className="space-y-3 text-sm text-foreground/80">
++          <p className="text-lg font-semibold text-foreground">{ticket.route}</p>
++          <p>
++            <span className="font-medium text-foreground">Abfahrt:</span> {ticket.departure}
++          </p>
++          <p>
++            <span className="font-medium text-foreground">Ankunft:</span> {ticket.arrival}
++          </p>
++          <p>
++            <span className="font-medium text-foreground">Platz:</span> Wagen {ticket.coach}, Sitz {ticket.seat}
++          </p>
++          <Button onClick={handleWallet}>{walletStatus ?? "Zum Wallet hinzufügen"}</Button>
++        </div>
++      </div>
++      <div className="rounded-2xl bg-white/70 p-4 text-sm text-foreground/80">
++        <h3 className="text-sm font-semibold text-foreground">EU-Fahrgastrechte</h3>
++        <p className="mt-1">
++          Bei Verspätungen ab 60 Minuten hast du Anspruch auf Entschädigung gemäß EU-Verordnung 1371/2007.
++          Bewahre dein Ticket auf und reiche es beim Anbieter ein.
++        </p>
++      </div>
++    </Card>
++  );
++}
+diff --git a/src/app/ticket/page.tsx b/src/app/ticket/page.tsx
+new file mode 100644
+index 0000000000000000000000000000000000000000..2c350a241c946868d2f3899eed47cde3a41e3335
+--- /dev/null
++++ b/src/app/ticket/page.tsx
+@@ -0,0 +1,15 @@
++import { TicketContent } from "./TicketContent";
++
++export default function TicketPage() {
++  return (
++    <div className="space-y-6">
++      <div>
++        <h1 className="text-3xl font-semibold text-foreground">Dein RailEase Ticket</h1>
++        <p className="mt-2 text-sm text-foreground/70">
++          Speichere dein Ticket oder füge es deinem digitalen Wallet hinzu.
++        </p>
++      </div>
++      <TicketContent />
++    </div>
++  );
++}
+diff --git a/src/components/Badge.tsx b/src/components/Badge.tsx
+new file mode 100644
+index 0000000000000000000000000000000000000000..d6e47ff74cac96a29ec66734f6e7ec63cdd92caf
+--- /dev/null
++++ b/src/components/Badge.tsx
+@@ -0,0 +1,18 @@
++import * as React from "react";
++import { cn } from "@/lib/utils";
++
++const Badge = React.forwardRef<HTMLSpanElement, React.HTMLAttributes<HTMLSpanElement>>(
++  ({ className, ...props }, ref) => (
++    <span
++      ref={ref}
++      className={cn(
++        "inline-flex items-center rounded-full bg-tint px-3 py-1 text-xs font-medium text-foreground",
++        className
++      )}
++      {...props}
++    />
++  )
++);
++Badge.displayName = "Badge";
++
++export { Badge };
+diff --git a/src/components/Button.tsx b/src/components/Button.tsx
+new file mode 100644
+index 0000000000000000000000000000000000000000..9201227b4e45c06c1e02aedce89bf4abdeb34d30
+--- /dev/null
++++ b/src/components/Button.tsx
+@@ -0,0 +1,42 @@
++import * as React from "react";
++import { Slot } from "@radix-ui/react-slot";
++import { cva, type VariantProps } from "class-variance-authority";
++import { cn } from "@/lib/utils";
++
++const buttonVariants = cva(
++  "inline-flex items-center justify-center rounded-full font-semibold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:opacity-60 disabled:pointer-events-none",
++  {
++    variants: {
++      variant: {
++        primary: "bg-primary text-white hover:bg-[#a31720] focus-visible:ring-primary",
++        outline: "border border-border bg-transparent text-primary hover:bg-tint/60",
++        ghost: "bg-transparent text-foreground hover:bg-tint/40",
++      },
++      size: {
++        default: "px-5 py-3 text-sm",
++        lg: "px-6 py-3.5 text-base",
++        sm: "px-4 py-2 text-sm",
++      },
++    },
++    defaultVariants: {
++      variant: "primary",
++      size: "default",
++    },
++  }
++);
++
++export interface ButtonProps
++  extends React.ButtonHTMLAttributes<HTMLButtonElement>,
++    VariantProps<typeof buttonVariants> {
++  asChild?: boolean;
++}
++
++const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
++  ({ className, variant, size, asChild = false, ...props }, ref) => {
++    const Comp = asChild ? Slot : "button";
++    return <Comp ref={ref} className={cn(buttonVariants({ variant, size }), className)} {...props} />;
++  }
++);
++Button.displayName = "Button";
++
++export { Button, buttonVariants };
+diff --git a/src/components/Card.tsx b/src/components/Card.tsx
+new file mode 100644
+index 0000000000000000000000000000000000000000..d0bc52fe3d56cb9da33a218bc2f862d43817b008
+--- /dev/null
++++ b/src/components/Card.tsx
+@@ -0,0 +1,18 @@
++import * as React from "react";
++import { cn } from "@/lib/utils";
++
++const Card = React.forwardRef<HTMLDivElement, React.HTMLAttributes<HTMLDivElement>>(
++  ({ className, ...props }, ref) => (
++    <div
++      ref={ref}
++      className={cn(
++        "rounded-2xl border border-border bg-card p-6 shadow-soft backdrop-blur-sm",
++        className
++      )}
++      {...props}
++    />
++  )
++);
++Card.displayName = "Card";
++
++export { Card };
+diff --git a/src/components/EmptyState.tsx b/src/components/EmptyState.tsx
+new file mode 100644
+index 0000000000000000000000000000000000000000..0c087ea684bb852fe3b47b0975ec390ef0a6d094
+--- /dev/null
++++ b/src/components/EmptyState.tsx
+@@ -0,0 +1,18 @@
++import type { ReactNode } from "react";
++import { Card } from "./Card";
++
++interface EmptyStateProps {
++  title: string;
++  description: string;
++  action?: ReactNode;
++}
++
++export function EmptyState({ title, description, action }: EmptyStateProps) {
++  return (
++    <Card className="text-center">
++      <h3 className="text-lg font-semibold text-foreground">{title}</h3>
++      <p className="mt-2 text-sm text-muted">{description}</p>
++      {action ? <div className="mt-4 flex justify-center">{action}</div> : null}
++    </Card>
++  );
++}
+diff --git a/src/components/Filters.tsx b/src/components/Filters.tsx
+new file mode 100644
+index 0000000000000000000000000000000000000000..744843d2bffeef9dbf27b4a7f3dbec9582439da8
+--- /dev/null
++++ b/src/components/Filters.tsx
+@@ -0,0 +1,54 @@
++"use client";
++
++import { useState, useEffect } from "react";
++import { Button } from "./Button";
++import { Select } from "./Select";
++
++export type SortOption = "price" | "duration" | "departure" | "arrivals";
++
++export interface FilterState {
++  sortBy: SortOption;
++  directOnly: boolean;
++}
++
++interface FiltersProps {
++  onChange: (state: FilterState) => void;
++  initialDirectOnly?: boolean;
++}
++
++export function Filters({ onChange, initialDirectOnly = false }: FiltersProps) {
++  const [state, setState] = useState<FilterState>({ sortBy: "price", directOnly: initialDirectOnly });
++
++  useEffect(() => {
++    onChange(state);
++  }, [state, onChange]);
++
++  return (
++    <div className="flex flex-col gap-3 rounded-2xl border border-border bg-white p-4 shadow-soft">
++      <div>
++        <label className="mb-1 block text-sm font-medium text-foreground">Sortieren nach</label>
++        <Select
++          value={state.sortBy}
++          onChange={(event) => setState((prev) => ({ ...prev, sortBy: event.target.value as SortOption }))}
++        >
++          <option value="price">Preis</option>
++          <option value="duration">Dauer</option>
++          <option value="departure">Abfahrt</option>
++          <option value="arrivals">Ankunft</option>
++        </Select>
++      </div>
++      <label className="flex items-center gap-3 text-sm text-foreground">
++        <input
++          type="checkbox"
++          className="h-5 w-5 rounded border border-border text-primary focus-visible:ring-primary"
++          checked={state.directOnly}
++          onChange={(event) => setState((prev) => ({ ...prev, directOnly: event.target.checked }))}
++        />
++        Nur Direktverbindungen
++      </label>
++      <Button variant="ghost" onClick={() => setState({ sortBy: "price", directOnly: initialDirectOnly })}>
++        Zurücksetzen
++      </Button>
++    </div>
++  );
++}
+diff --git a/src/components/Footer.tsx b/src/components/Footer.tsx
+new file mode 100644
+index 0000000000000000000000000000000000000000..2b119fc3ee4a7841c71decddafc44bd480103872
+--- /dev/null
++++ b/src/components/Footer.tsx
+@@ -0,0 +1,20 @@
++export function Footer() {
++  return (
++    <footer className="border-t border-border/70 bg-background py-10">
++      <div className="mx-auto flex w-full max-w-6xl flex-col gap-4 px-6 text-sm text-foreground/70 md:flex-row md:items-center md:justify-between">
++        <p>&copy; {new Date().getFullYear()} RailEase. Alle Rechte vorbehalten.</p>
++        <div className="flex flex-wrap items-center gap-4">
++          <a href="#" className="hover:text-primary">
++            Datenschutz
++          </a>
++          <a href="#" className="hover:text-primary">
++            Impressum
++          </a>
++          <a href="#" className="hover:text-primary">
++            Support
++          </a>
++        </div>
++      </div>
++    </footer>
++  );
++}
+diff --git a/src/components/Input.tsx b/src/components/Input.tsx
+new file mode 100644
+index 0000000000000000000000000000000000000000..1a9b52f5dd2e379a7d00203b5dc5b0b3a1d9cbea
+--- /dev/null
++++ b/src/components/Input.tsx
+@@ -0,0 +1,21 @@
++import * as React from "react";
++import { cn } from "@/lib/utils";
++
++export type InputProps = React.InputHTMLAttributes<HTMLInputElement>;
++
++const Input = React.forwardRef<HTMLInputElement, InputProps>(({ className, type = "text", ...props }, ref) => {
++  return (
++    <input
++      type={type}
++      className={cn(
++        "flex h-11 w-full rounded-xl border border-border bg-white px-4 text-sm text-foreground shadow-sm transition focus-visible:ring-primary placeholder:text-muted",
++        className
++      )}
++      ref={ref}
++      {...props}
++    />
++  );
++});
++Input.displayName = "Input";
++
++export { Input };
+diff --git a/src/components/Navbar.tsx b/src/components/Navbar.tsx
+new file mode 100644
+index 0000000000000000000000000000000000000000..2aafa2439dd00df230a717eb2ff60ccf97717441
+--- /dev/null
++++ b/src/components/Navbar.tsx
+@@ -0,0 +1,37 @@
++import Link from "next/link";
++import Image from "next/image";
++import { Button } from "./Button";
++
++const links = [
++  { href: "/results", label: "Verbindungen" },
++  { href: "/checkout", label: "Checkout" },
++  { href: "/ticket", label: "Ticket" },
++];
++
++export function Navbar() {
++  return (
++    <header className="sticky top-0 z-40 border-b border-border/70 bg-background/90 backdrop-blur">
++      <div className="mx-auto flex w-full max-w-6xl items-center justify-between px-6 py-4">
++        <Link href="/" className="flex items-center gap-3">
++          <Image src="/logo.png" alt="RailEase" width={48} height={48} className="rounded-xl" priority />
++          <span className="text-lg font-semibold tracking-wide text-primary">RailEase</span>
++        </Link>
++        <nav className="hidden items-center gap-6 text-sm font-medium text-foreground/80 md:flex">
++          {links.map((link) => (
++            <Link key={link.href} href={link.href} className="transition hover:text-primary">
++              {link.label}
++            </Link>
++          ))}
++        </nav>
++        <div className="flex items-center gap-2">
++          <Button asChild variant="outline" className="hidden md:inline-flex">
++            <Link href="/results">Fahrten finden</Link>
++          </Button>
++          <Button asChild className="md:inline-flex">
++            <Link href="/checkout">Jetzt buchen</Link>
++          </Button>
++        </div>
++      </div>
++    </header>
++  );
++}
+diff --git a/src/components/ResultCard.tsx b/src/components/ResultCard.tsx
+new file mode 100644
+index 0000000000000000000000000000000000000000..38e6adabb790ed4f542454956777bd444c66bb61
+--- /dev/null
++++ b/src/components/ResultCard.tsx
+@@ -0,0 +1,83 @@
++"use client";
++
++import { format } from "date-fns";
++import { de } from "date-fns/locale";
++import Image from "next/image";
++import { Button } from "./Button";
++import { Card } from "./Card";
++import { Badge } from "./Badge";
++import { formatCurrency, formatDuration } from "@/lib/utils";
++import type { Offer } from "@/types";
++import { useCheckoutStore } from "@/state/checkoutStore";
++import { useRouter } from "next/navigation";
++
++interface ResultCardProps {
++  offer: Offer;
++}
++
++export function ResultCard({ offer }: ResultCardProps) {
++  const router = useRouter();
++  const setOffer = useCheckoutStore((state) => state.setOffer);
++
++  function handleContinue() {
++    setOffer(offer);
++    router.push("/checkout");
++  }
++
++  return (
++    <Card className="grid gap-4 md:grid-cols-[1.2fr_0.8fr_auto] md:items-center">
++      <div>
++        <div className="flex items-center gap-3">
++          <Image src={offer.providerLogo} alt={offer.provider} width={48} height={48} className="rounded-full" />
++          <div>
++            <p className="text-sm font-semibold text-foreground">{offer.provider}</p>
++            <p className="text-xs text-muted">Klasse {offer.travelClass}</p>
++          </div>
++        </div>
++        <div className="mt-4 flex items-center gap-4 text-sm">
++          <div>
++            <p className="text-2xl font-semibold tracking-wide text-foreground">
++              {format(offer.departure ? new Date(offer.departure) : new Date(), "HH:mm", { locale: de })}
++            </p>
++            <p className="text-xs uppercase text-muted">Abfahrt</p>
++          </div>
++          <div className="text-xs text-muted">
++            <p>{formatDuration(offer.durationMinutes)}</p>
++            <p>{offer.transfers === 0 ? "Direkt" : `${offer.transfers} Umstieg(e)`}</p>
++          </div>
++          <div>
++            <p className="text-2xl font-semibold tracking-wide text-foreground">
++              {format(offer.arrival ? new Date(offer.arrival) : new Date(), "HH:mm", { locale: de })}
++            </p>
++            <p className="text-xs uppercase text-muted">Ankunft</p>
++          </div>
++        </div>
++      </div>
++      <div className="space-y-3 text-sm text-foreground/80">
++        <div className="flex flex-wrap gap-2">
++          {offer.direct ? <Badge>Direkt</Badge> : null}
++          <Badge>{offer.segments.length} Teilstrecke(n)</Badge>
++        </div>
++        <ul className="space-y-1">
++          {offer.segments.map((segment) => (
++            <li key={segment.train} className="flex justify-between">
++              <span>
++                {segment.from} → {segment.to}
++              </span>
++              <span className="text-muted">{segment.train}</span>
++            </li>
++          ))}
++        </ul>
++      </div>
++      <div className="flex flex-col items-end gap-3">
++        <div className="text-right">
++          <p className="text-lg font-semibold text-foreground">{formatCurrency(offer.price, offer.currency)}</p>
++          <p className="text-xs text-muted">inkl. MwSt.</p>
++        </div>
++        <Button onClick={handleContinue} className="w-full md:w-auto">
++          Weiter
++        </Button>
++      </div>
++    </Card>
++  );
++}
+diff --git a/src/components/SearchForm.tsx b/src/components/SearchForm.tsx
+new file mode 100644
+index 0000000000000000000000000000000000000000..805f005ee63e457dfb37d46e54f564d58c9c098c
+--- /dev/null
++++ b/src/components/SearchForm.tsx
+@@ -0,0 +1,134 @@
++"use client";
++
++import { useTransition } from "react";
++import { useRouter } from "next/navigation";
++import { useForm } from "react-hook-form";
++import { zodResolver } from "@hookform/resolvers/zod";
++import { formatISO } from "date-fns";
++import { searchSchema, type SearchFormValues } from "@/lib/validation/search";
++import { Button } from "./Button";
++import { Input } from "./Input";
++import { Select } from "./Select";
++import { useSearchStore } from "@/state/searchStore";
++
++const classOptions = [
++  { label: "Economy", value: "economy" },
++  { label: "Comfort", value: "comfort" },
++  { label: "First", value: "first" },
++];
++
++export function SearchForm({ inline }: { inline?: boolean }) {
++  const router = useRouter();
++  const [, startTransition] = useTransition();
++  const setCriteria = useSearchStore((state) => state.setCriteria);
++
++  const form = useForm<SearchFormValues>({
++    resolver: zodResolver(searchSchema),
++    defaultValues: {
++      from: "Berlin Hbf",
++      to: "Paris Gare du Nord",
++      departureDate: formatISO(new Date(), { representation: "date" }),
++      returnDate: "",
++      passengers: 1,
++      travelClass: "economy",
++      directOnly: false,
++    },
++  });
++
++  function onSubmit(values: SearchFormValues) {
++    setCriteria(values);
++    const params = new URLSearchParams();
++    Object.entries(values).forEach(([key, value]) => {
++      if (value === undefined || value === "") return;
++      params.set(key, String(value));
++    });
++    startTransition(() => {
++      router.push(`/results?${params.toString()}`);
++    });
++  }
++
++  return (
++    <form
++      onSubmit={form.handleSubmit(onSubmit)}
++      className={`grid gap-4 ${inline ? "grid-cols-1 md:grid-cols-6" : "grid-cols-1"}`}
++      aria-live="polite"
++    >
++      <div className={inline ? "md:col-span-2" : undefined}>
++        <label className="mb-1 block text-sm font-medium text-foreground" htmlFor="from">
++          Von
++        </label>
++        <Input id="from" placeholder="Abfahrtsbahnhof" {...form.register("from")} />
++        {form.formState.errors.from ? (
++          <p className="mt-1 text-xs text-primary">{form.formState.errors.from.message}</p>
++        ) : null}
++      </div>
++      <div className={inline ? "md:col-span-2" : undefined}>
++        <label className="mb-1 block text-sm font-medium text-foreground" htmlFor="to">
++          Nach
++        </label>
++        <Input id="to" placeholder="Zielbahnhof" {...form.register("to")} />
++        {form.formState.errors.to ? (
++          <p className="mt-1 text-xs text-primary">{form.formState.errors.to.message}</p>
++        ) : null}
++      </div>
++      <div>
++        <label className="mb-1 block text-sm font-medium text-foreground" htmlFor="departureDate">
++          Abfahrt
++        </label>
++        <Input id="departureDate" type="date" {...form.register("departureDate")} />
++        {form.formState.errors.departureDate ? (
++          <p className="mt-1 text-xs text-primary">{form.formState.errors.departureDate.message}</p>
++        ) : null}
++      </div>
++      <div>
++        <label className="mb-1 block text-sm font-medium text-foreground" htmlFor="returnDate">
++          Rückfahrt (optional)
++        </label>
++        <Input id="returnDate" type="date" {...form.register("returnDate")} />
++        {form.formState.errors.returnDate ? (
++          <p className="mt-1 text-xs text-primary">{form.formState.errors.returnDate.message}</p>
++        ) : null}
++      </div>
++      <div>
++        <label className="mb-1 block text-sm font-medium text-foreground" htmlFor="passengers">
++          Reisende
++        </label>
++        <Input id="passengers" type="number" min={1} max={8} {...form.register("passengers", { valueAsNumber: true })} />
++        {form.formState.errors.passengers ? (
++          <p className="mt-1 text-xs text-primary">{form.formState.errors.passengers.message}</p>
++        ) : null}
++      </div>
++      <div>
++        <label className="mb-1 block text-sm font-medium text-foreground" htmlFor="travelClass">
++          Klasse
++        </label>
++        <Select id="travelClass" {...form.register("travelClass")}>
++          {classOptions.map((option) => (
++            <option key={option.value} value={option.value}>
++              {option.label}
++            </option>
++          ))}
++        </Select>
++        {form.formState.errors.travelClass ? (
++          <p className="mt-1 text-xs text-primary">{form.formState.errors.travelClass.message}</p>
++        ) : null}
++      </div>
++      <div className={`flex items-center gap-3 ${inline ? "md:col-span-4" : "mt-2"}`}>
++        <input
++          id="directOnly"
++          type="checkbox"
++          className="h-5 w-5 rounded border border-border text-primary focus-visible:ring-primary"
++          {...form.register("directOnly")}
++        />
++        <label htmlFor="directOnly" className="text-sm text-foreground">
++          Nur Direktverbindungen anzeigen
++        </label>
++      </div>
++      <div className={inline ? "md:col-span-2 flex items-end" : undefined}>
++        <Button type="submit" size="lg" className="w-full">
++          Suche starten
++        </Button>
++      </div>
++    </form>
++  );
++}
+diff --git a/src/components/Select.tsx b/src/components/Select.tsx
+new file mode 100644
+index 0000000000000000000000000000000000000000..59b267914f81993540d2cac4f3b85a2dc781a841
+--- /dev/null
++++ b/src/components/Select.tsx
+@@ -0,0 +1,22 @@
++import * as React from "react";
++import { cn } from "@/lib/utils";
++
++export type SelectProps = React.SelectHTMLAttributes<HTMLSelectElement>;
++
++const Select = React.forwardRef<HTMLSelectElement, SelectProps>(({ className, children, ...props }, ref) => {
++  return (
++    <select
++      ref={ref}
++      className={cn(
++        "flex h-11 w-full appearance-none rounded-xl border border-border bg-white px-4 text-sm text-foreground shadow-sm transition focus-visible:ring-primary",
++        className
++      )}
++      {...props}
++    >
++      {children}
++    </select>
++  );
++});
++Select.displayName = "Select";
++
++export { Select };
+diff --git a/src/components/Skeleton.tsx b/src/components/Skeleton.tsx
+new file mode 100644
+index 0000000000000000000000000000000000000000..d14d9231443d5508a494510151b9bdeeb38de17d
+--- /dev/null
++++ b/src/components/Skeleton.tsx
+@@ -0,0 +1,15 @@
++import * as React from "react";
++import { cn } from "@/lib/utils";
++
++const Skeleton = React.forwardRef<HTMLDivElement, React.HTMLAttributes<HTMLDivElement>>(
++  ({ className, ...props }, ref) => (
++    <div
++      ref={ref}
++      className={cn("animate-pulse rounded-2xl bg-tint/60", className)}
++      {...props}
++    />
++  )
++);
++Skeleton.displayName = "Skeleton";
++
++export { Skeleton };
+diff --git a/src/lib/utils/cn.ts b/src/lib/utils/cn.ts
+new file mode 100644
+index 0000000000000000000000000000000000000000..365058cebd7d2bdb327ca1c081b16e4937e11050
+--- /dev/null
++++ b/src/lib/utils/cn.ts
+@@ -0,0 +1,6 @@
++import { type ClassValue, clsx } from "clsx";
++import { twMerge } from "tailwind-merge";
++
++export function cn(...inputs: ClassValue[]) {
++  return twMerge(clsx(inputs));
++}
+diff --git a/src/lib/utils/currency.ts b/src/lib/utils/currency.ts
+new file mode 100644
+index 0000000000000000000000000000000000000000..470f3c4eb35e3e00eb2d29bcf5e09d2fb86729d3
+--- /dev/null
++++ b/src/lib/utils/currency.ts
+@@ -0,0 +1,7 @@
++export function formatCurrency(value: number, currency: string = "EUR") {
++  return new Intl.NumberFormat("de-DE", {
++    style: "currency",
++    currency,
++    minimumFractionDigits: 2,
++  }).format(value);
++}
+diff --git a/src/lib/utils/duration.ts b/src/lib/utils/duration.ts
+new file mode 100644
+index 0000000000000000000000000000000000000000..683cbcff26ff1fc3b021a06c4e0a780f1321861b
+--- /dev/null
++++ b/src/lib/utils/duration.ts
+@@ -0,0 +1,11 @@
++export function formatDuration(minutes: number) {
++  const hours = Math.floor(minutes / 60);
++  const remaining = minutes % 60;
++  if (hours <= 0) {
++    return `${remaining} Min`;
++  }
++  if (remaining === 0) {
++    return `${hours} Std`;
++  }
++  return `${hours} Std ${remaining} Min`;
++}
+diff --git a/src/lib/utils/index.ts b/src/lib/utils/index.ts
+new file mode 100644
+index 0000000000000000000000000000000000000000..6e491eb3480ac91c7a2421b7b24b9108e2b271cb
+--- /dev/null
++++ b/src/lib/utils/index.ts
+@@ -0,0 +1,3 @@
++export * from "./currency";
++export * from "./duration";
++export * from "./cn";
+diff --git a/src/lib/validation/booking.ts b/src/lib/validation/booking.ts
+new file mode 100644
+index 0000000000000000000000000000000000000000..8314cfcb95259d095d649a7304800cb0a9c25b7c
+--- /dev/null
++++ b/src/lib/validation/booking.ts
+@@ -0,0 +1,15 @@
++import { z } from "zod";
++
++export const bookingSchema = z.object({
++  offerId: z.string().min(1),
++  name: z.string().min(2, "Name angeben"),
++  email: z.string().email("Gültige E-Mail nutzen"),
++  passengers: z.number().int().min(1).max(8),
++  travelClass: z.enum(["economy", "comfort", "first"]),
++  seatPreference: z.enum(["fenster", "gang", "egal"]).default("egal"),
++  acceptTerms: z.boolean().refine((val) => val, {
++    message: "AGB akzeptieren",
++  }),
++});
++
++export type BookingPayload = z.infer<typeof bookingSchema>;
+diff --git a/src/lib/validation/search.ts b/src/lib/validation/search.ts
+new file mode 100644
+index 0000000000000000000000000000000000000000..24ae7fb9ea73f737ce3821521f7763f15faa7d6b
+--- /dev/null
++++ b/src/lib/validation/search.ts
+@@ -0,0 +1,13 @@
++import { z } from "zod";
++
++export const searchSchema = z.object({
++  from: z.string().min(2, "Abfahrtsort angeben"),
++  to: z.string().min(2, "Ziel angeben"),
++  departureDate: z.string().min(1, "Datum wählen"),
++  returnDate: z.string().optional().or(z.literal("")),
++  passengers: z.coerce.number().int().min(1).max(8),
++  travelClass: z.enum(["economy", "comfort", "first"]),
++  directOnly: z.boolean().default(false),
++});
++
++export type SearchFormValues = z.infer<typeof searchSchema>;
+diff --git a/src/services/pdf.ts b/src/services/pdf.ts
+new file mode 100644
+index 0000000000000000000000000000000000000000..7f94c068398b0e2bc0f876b96f4e884cc62d1773
+--- /dev/null
++++ b/src/services/pdf.ts
+@@ -0,0 +1,3 @@
++export async function generateTicketPdf(bookingId: string) {
++  return `https://example.com/pdf/${bookingId}.pdf`;
++}
+diff --git a/src/services/providers.ts b/src/services/providers.ts
+new file mode 100644
+index 0000000000000000000000000000000000000000..1e47ed80e87c06cedddf6c6e2d8c3e8270f345bd
+--- /dev/null
++++ b/src/services/providers.ts
+@@ -0,0 +1,67 @@
++import { addMinutes, formatISO, parseISO } from "date-fns";
++import { randomUUID } from "crypto";
++import type { Offer, Segment, TravelClass } from "@/types";
++import type { SearchFormValues } from "@/lib/validation/search";
++
++const PROVIDERS = [
++  { name: "EuroRail", logo: "https://images.unsplash.com/photo-1520012218364-950b698f72c7?w=200" },
++  { name: "TransContinental", logo: "https://images.unsplash.com/photo-1521207418485-99c705420785?w=200" },
++  { name: "RailExpress", logo: "https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?w=200" }
++];
++
++const DURATIONS = [160, 185, 210, 240, 305, 325, 360];
++
++const TRANSFER_OPTIONS = [0, 0, 1, 1, 2];
++
++const CLASSES: Record<TravelClass, number> = {
++  economy: 1,
++  comfort: 1.25,
++  first: 1.65,
++};
++
++export interface AggregatedOfferInput extends SearchFormValues {}
++
++export async function fetchAggregatedOffers(params: AggregatedOfferInput): Promise<Offer[]> {
++  const seedDate = parseISO(params.departureDate);
++  const offers: Offer[] = [];
++
++  for (let i = 0; i < 8; i += 1) {
++    const provider = PROVIDERS[i % PROVIDERS.length];
++    const transfers = TRANSFER_OPTIONS[Math.floor(Math.random() * TRANSFER_OPTIONS.length)];
++    const durationMinutes = DURATIONS[Math.floor(Math.random() * DURATIONS.length)];
++    const departureOffset = Math.floor(Math.random() * 9) * 25;
++    const departure = addMinutes(seedDate, departureOffset);
++    const arrival = addMinutes(departure, durationMinutes);
++    const basePrice = 39 + durationMinutes * 0.4 + transfers * 12;
++    const price = Math.round(basePrice * CLASSES[params.travelClass]);
++
++    const segments: Segment[] = Array.from({ length: transfers + 1 }).map((_, idx) => {
++      const segDeparture = idx === 0 ? departure : addMinutes(departure, durationMinutes * (idx / (transfers + 1)));
++      const segArrival = idx === transfers ? arrival : addMinutes(segDeparture, durationMinutes / (transfers + 1));
++      return {
++        from: idx === 0 ? params.from : `${params.from} Umstieg ${idx}`,
++        to: idx === transfers ? params.to : `${params.to} Umstieg ${idx + 1}`,
++        departure: formatISO(segDeparture),
++        arrival: formatISO(segArrival),
++        train: `IC ${Math.floor(Math.random() * 800) + 100}`,
++      };
++    });
++
++    offers.push({
++      id: randomUUID(),
++      provider: provider.name,
++      providerLogo: provider.logo,
++      price,
++      currency: "EUR",
++      departure: formatISO(departure),
++      arrival: formatISO(arrival),
++      durationMinutes,
++      transfers,
++      segments,
++      travelClass: params.travelClass,
++      direct: transfers === 0,
++    });
++  }
++
++  return offers;
++}
+diff --git a/src/services/wallet.ts b/src/services/wallet.ts
+new file mode 100644
+index 0000000000000000000000000000000000000000..9bb0594ff33f6bac5241b168190a42c28aff9885
+--- /dev/null
++++ b/src/services/wallet.ts
+@@ -0,0 +1,4 @@
++export async function addToWallet(bookingId: string) {
++  await new Promise((resolve) => setTimeout(resolve, 500));
++  return { success: true, bookingId };
++}
+diff --git a/src/state/checkoutStore.ts b/src/state/checkoutStore.ts
+new file mode 100644
+index 0000000000000000000000000000000000000000..984e8e6544463f71630c71fd31ca8dea6a02a672
+--- /dev/null
++++ b/src/state/checkoutStore.ts
+@@ -0,0 +1,16 @@
++import { create } from "zustand";
++import type { Offer } from "@/types";
++
++interface CheckoutState {
++  offer?: Offer;
++  bookingId?: string;
++  setOffer: (offer: Offer) => void;
++  setBookingId: (bookingId: string) => void;
++  reset: () => void;
++}
++
++export const useCheckoutStore = create<CheckoutState>((set) => ({
++  setOffer: (offer) => set({ offer }),
++  setBookingId: (bookingId) => set({ bookingId }),
++  reset: () => set({ offer: undefined, bookingId: undefined }),
++}));
+diff --git a/src/state/searchStore.ts b/src/state/searchStore.ts
+new file mode 100644
+index 0000000000000000000000000000000000000000..c253ec11e33ed4101bfc8680d01b7b3fe3f8a66a
+--- /dev/null
++++ b/src/state/searchStore.ts
+@@ -0,0 +1,25 @@
++import { create } from "zustand";
++import type { Offer } from "@/types";
++import type { SearchFormValues } from "@/lib/validation/search";
++
++interface SearchState {
++  criteria?: SearchFormValues;
++  results: Offer[];
++  loading: boolean;
++  error?: string;
++  setCriteria: (criteria: SearchFormValues) => void;
++  setResults: (results: Offer[]) => void;
++  setLoading: (loading: boolean) => void;
++  setError: (error?: string) => void;
++  reset: () => void;
++}
++
++export const useSearchStore = create<SearchState>((set) => ({
++  results: [],
++  loading: false,
++  setCriteria: (criteria) => set({ criteria }),
++  setResults: (results) => set({ results }),
++  setLoading: (loading) => set({ loading }),
++  setError: (error) => set({ error }),
++  reset: () => set({ results: [], loading: false, error: undefined, criteria: undefined }),
++}));
+diff --git a/src/types/index.ts b/src/types/index.ts
+new file mode 100644
+index 0000000000000000000000000000000000000000..9116dea1009c9ee564271897dfd6e036e4006996
+--- /dev/null
++++ b/src/types/index.ts
+@@ -0,0 +1,36 @@
++export type TravelClass = "economy" | "comfort" | "first";
++
++export interface Segment {
++  from: string;
++  to: string;
++  departure: string;
++  arrival: string;
++  train: string;
++}
++
++export interface Offer {
++  id: string;
++  provider: string;
++  providerLogo: string;
++  price: number;
++  currency: string;
++  departure: string;
++  arrival: string;
++  durationMinutes: number;
++  transfers: number;
++  segments: Segment[];
++  travelClass: TravelClass;
++  direct: boolean;
++}
++
++export interface TicketDetails {
++  bookingId: string;
++  passengerName: string;
++  route: string;
++  departure: string;
++  arrival: string;
++  coach: string;
++  seat: string;
++  qrData: string;
++  pdfUrl: string;
++}
+diff --git a/tailwind.config.ts b/tailwind.config.ts
+new file mode 100644
+index 0000000000000000000000000000000000000000..b600e5d3c97a3d1c0c4f8e881aaab5e1d38374b0
+--- /dev/null
++++ b/tailwind.config.ts
+@@ -0,0 +1,33 @@
++import type { Config } from "tailwindcss";
++
++const config: Config = {
++  darkMode: ["class"],
++  content: [
++    "./src/**/*.{ts,tsx}",
++    "./src/components/**/*.{ts,tsx}",
++    "./src/app/**/*.{ts,tsx}"
++  ],
++  theme: {
++    extend: {
++      fontFamily: {
++        sans: ["Inter", "system-ui", "sans-serif"],
++      },
++      colors: {
++        background: "#f9f5f2",
++        foreground: "#111827",
++        primary: { DEFAULT: "#bc1a25", foreground: "#ffffff" },
++        accent: { DEFAULT: "#d1656b", foreground: "#111827" },
++        tint: { DEFAULT: "#eed0cf", foreground: "#111827" },
++        muted: "#e1a0a2",
++        border: "#eed0cf",
++        card: "#ffffff",
++      },
++      boxShadow: {
++        soft: "0 20px 45px -20px rgba(17, 24, 39, 0.25)",
++      },
++    },
++  },
++  plugins: [require("tailwindcss-animate")],
++};
++
++export default config;
+diff --git a/test/ResultCard.test.tsx b/test/ResultCard.test.tsx
+new file mode 100644
+index 0000000000000000000000000000000000000000..5402ccdf0a1e7f4b5d7545bf17684c3fb8a5444a
+--- /dev/null
++++ b/test/ResultCard.test.tsx
+@@ -0,0 +1,76 @@
++import { render, screen } from "@testing-library/react";
++import userEvent from "@testing-library/user-event";
++import { vi } from "vitest";
++import { ResultCard } from "@/components/ResultCard";
++import { useCheckoutStore } from "@/state/checkoutStore";
++import type { Offer } from "@/types";
++
++const push = vi.fn();
++
++vi.mock("next/navigation", () => ({
++  useRouter: () => ({ push }),
++}));
++
++vi.mock("next/image", () => ({
++  __esModule: true,
++  default: (props: any) => {
++    // eslint-disable-next-line @next/next/no-img-element
++    return <img {...props} alt={props.alt ?? ""} />;
++  },
++}));
++
++const offer: Offer = {
++  id: "offer-1",
++  provider: "EuroRail",
++  providerLogo: "https://example.com/logo.png",
++  price: 89,
++  currency: "EUR",
++  departure: new Date("2024-06-12T08:30:00Z").toISOString(),
++  arrival: new Date("2024-06-12T12:15:00Z").toISOString(),
++  durationMinutes: 225,
++  transfers: 1,
++  segments: [
++    {
++      from: "Berlin Hbf",
++      to: "Köln Hbf",
++      departure: new Date("2024-06-12T08:30:00Z").toISOString(),
++      arrival: new Date("2024-06-12T10:10:00Z").toISOString(),
++      train: "ICE 123",
++    },
++    {
++      from: "Köln Hbf",
++      to: "Paris Est",
++      departure: new Date("2024-06-12T10:40:00Z").toISOString(),
++      arrival: new Date("2024-06-12T12:15:00Z").toISOString(),
++      train: "TGV 45",
++    },
++  ],
++  travelClass: "comfort",
++  direct: false,
++};
++
++describe("ResultCard", () => {
++  beforeEach(() => {
++    push.mockClear();
++    useCheckoutStore.getState().reset();
++  });
++
++  it("renders offer information", () => {
++    render(<ResultCard offer={offer} />);
++
++    expect(screen.getByText(/EuroRail/)).toBeInTheDocument();
++    expect(screen.getByText(/ICE 123/)).toBeInTheDocument();
++    expect(screen.getByText(/TGV 45/)).toBeInTheDocument();
++    expect(screen.getByText(/89,00/)).toBeInTheDocument();
++  });
++
++  it("sets checkout offer and navigates on continue", async () => {
++    const user = userEvent.setup();
++    render(<ResultCard offer={offer} />);
++
++    await user.click(screen.getByRole("button", { name: /weiter/i }));
++
++    expect(useCheckoutStore.getState().offer?.id).toBe("offer-1");
++    expect(push).toHaveBeenCalledWith("/checkout");
++  });
++});
+diff --git a/test/SearchForm.test.tsx b/test/SearchForm.test.tsx
+new file mode 100644
+index 0000000000000000000000000000000000000000..63d00bf7ab93ed1f985e9c877281f3ccf5d6f6e1
+--- /dev/null
++++ b/test/SearchForm.test.tsx
+@@ -0,0 +1,53 @@
++import { render, screen } from "@testing-library/react";
++import userEvent from "@testing-library/user-event";
++import { vi } from "vitest";
++import { SearchForm } from "@/components/SearchForm";
++
++const push = vi.fn();
++
++vi.mock("next/navigation", () => ({
++  useRouter: () => ({ push }),
++}));
++
++vi.mock("next/image", () => ({
++  __esModule: true,
++  default: (props: any) => {
++    // eslint-disable-next-line @next/next/no-img-element
++    return <img {...props} alt={props.alt ?? ""} />;
++  },
++}));
++
++describe("SearchForm", () => {
++  beforeEach(() => {
++    push.mockClear();
++  });
++
++  it("shows validation errors for missing fields", async () => {
++    const user = userEvent.setup();
++    render(<SearchForm />);
++
++    const fromInput = screen.getByLabelText(/von/i);
++    await user.clear(fromInput);
++    await user.click(screen.getByRole("button", { name: /suche starten/i }));
++
++    expect(await screen.findByText(/Abfahrtsort angeben/)).toBeInTheDocument();
++    expect(push).not.toHaveBeenCalled();
++  });
++
++  it("navigates on valid submission", async () => {
++    const user = userEvent.setup();
++    render(<SearchForm />);
++
++    const fromInput = screen.getByLabelText(/von/i);
++    const toInput = screen.getByLabelText(/nach/i);
++
++    await user.clear(fromInput);
++    await user.type(fromInput, "Wien Hbf");
++    await user.clear(toInput);
++    await user.type(toInput, "Zürich HB");
++
++    await user.click(screen.getByRole("button", { name: /suche starten/i }));
++
++    expect(push).toHaveBeenCalledWith(expect.stringContaining("/results?"));
++  });
++});
+diff --git a/test/api-search.test.ts b/test/api-search.test.ts
+new file mode 100644
+index 0000000000000000000000000000000000000000..adc9c82ef10ec7a225d51e1485f279e2946a2d29
+--- /dev/null
++++ b/test/api-search.test.ts
+@@ -0,0 +1,26 @@
++import { describe, expect, it } from "vitest";
++import { GET } from "@/app/api/search/route";
++
++function buildRequest(query: Record<string, string>) {
++  const url = new URL("http://localhost/api/search");
++  Object.entries(query).forEach(([key, value]) => url.searchParams.set(key, value));
++  return new Request(url.toString());
++}
++
++describe("GET /api/search", () => {
++  it("returns a list of offers", async () => {
++    const request = buildRequest({
++      from: "Berlin Hbf",
++      to: "Paris",
++      departureDate: "2024-06-12",
++      passengers: "1",
++      travelClass: "economy",
++    });
++
++    const response = await GET(request);
++    expect(response.ok).toBe(true);
++    const data = await response.json();
++    expect(Array.isArray(data.offers)).toBe(true);
++    expect(data.offers.length).toBeGreaterThan(0);
++  });
++});
+diff --git a/test/utils.test.ts b/test/utils.test.ts
+new file mode 100644
+index 0000000000000000000000000000000000000000..0c6da5cdfc7526702b4833f24330730251854aa4
+--- /dev/null
++++ b/test/utils.test.ts
+@@ -0,0 +1,18 @@
++import { describe, expect, it } from "vitest";
++import { formatCurrency, formatDuration } from "@/lib/utils";
++
++describe("formatCurrency", () => {
++  it("formats euro values", () => {
++    expect(formatCurrency(123.45)).toContain("123,45 €");
++  });
++});
++
++describe("formatDuration", () => {
++  it("formats minutes to hours", () => {
++    expect(formatDuration(135)).toBe("2 Std 15 Min");
++  });
++
++  it("formats less than hour", () => {
++    expect(formatDuration(45)).toBe("45 Min");
++  });
++});
+diff --git a/tsconfig.json b/tsconfig.json
+new file mode 100644
+index 0000000000000000000000000000000000000000..64daefdc4e386b255bdde9dde9522c10becba169
+--- /dev/null
++++ b/tsconfig.json
+@@ -0,0 +1,25 @@
++{
++  "compilerOptions": {
++    "target": "ES2020",
++    "lib": ["dom", "dom.iterable", "es2020"],
++    "allowJs": false,
++    "skipLibCheck": true,
++    "strict": true,
++    "forceConsistentCasingInFileNames": true,
++    "noEmit": true,
++    "esModuleInterop": true,
++    "module": "ESNext",
++    "moduleResolution": "Bundler",
++    "resolveJsonModule": true,
++    "isolatedModules": true,
++    "jsx": "preserve",
++    "incremental": true,
++    "baseUrl": ".",
++    "paths": {
++      "@/*": ["src/*"]
++    },
++    "types": ["vitest/globals", "@testing-library/jest-dom"]
++  },
++  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", "**/*.cjs"],
++  "exclude": ["node_modules"]
++}
+diff --git a/vitest.config.ts b/vitest.config.ts
+new file mode 100644
+index 0000000000000000000000000000000000000000..b7b1f0dae6b118cf734d61363b5f4da31a25d0d3
+--- /dev/null
++++ b/vitest.config.ts
+@@ -0,0 +1,20 @@
++import { defineConfig } from "vitest/config";
++import react from "@vitejs/plugin-react";
++import path from "path";
++
++export default defineConfig({
++  plugins: [react()],
++  test: {
++    environment: "jsdom",
++    globals: true,
++    setupFiles: ["./vitest.setup.ts"],
++    coverage: {
++      reporter: ["text", "lcov"],
++    },
++  },
++  resolve: {
++    alias: {
++      "@": path.resolve(__dirname, "src"),
++    },
++  },
++});
+diff --git a/vitest.setup.ts b/vitest.setup.ts
+new file mode 100644
+index 0000000000000000000000000000000000000000..f149f27ae4bbd7cc4f6253570176a4fce144ef95
+--- /dev/null
++++ b/vitest.setup.ts
+@@ -0,0 +1 @@
++import "@testing-library/jest-dom/vitest";
+ 
+EOF
+)
