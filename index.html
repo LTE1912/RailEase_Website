@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>RailEase | Europe-wide tickets without the hassle</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div class="page-shell">
+    <header class="site-header" id="top">
+      <div class="brand">
+        <div class="brand-mark">R</div>
+        <span class="brand-name">RailEase</span>
+      </div>
+      <nav class="nav">
+        <a href="#hero" class="nav-link">Home</a>
+        <a href="#planner" class="nav-link">Plan</a>
+        <a href="#benefits" class="nav-link">Benefits</a>
+        <a href="#deals" class="nav-link">Deals</a>
+        <a href="#faq" class="nav-link">FAQ</a>
+      </nav>
+      <button class="cta ghost" data-scroll="#planner">Book now</button>
+    </header>
+
+    <main>
+      <section class="hero" id="hero">
+        <div class="hero__content">
+          <p class="eyebrow">Europe-wide tickets</p>
+          <h1>Rail travel, simplified.</h1>
+          <p class="lede">Compare national rail operators, reserve seats, and glide through stations with mobile tickets. RailEase finds the best route so you can focus on the journey.</p>
+          <div class="hero__actions">
+            <button class="cta" data-scroll="#planner">Start planning</button>
+            <button class="cta secondary" data-scroll="#benefits">See how it works</button>
+          </div>
+          <div class="metrics">
+            <div class="metric">
+              <span class="metric__value">+1,200</span>
+              <span class="metric__label">Cities connected</span>
+            </div>
+            <div class="metric">
+              <span class="metric__value">98%</span>
+              <span class="metric__label">On-time partners</span>
+            </div>
+            <div class="metric">
+              <span class="metric__value live" id="live-meter">Live timetable ready</span>
+              <span class="metric__label">Updated every minute</span>
+            </div>
+          </div>
+        </div>
+        <div class="hero__card">
+          <div class="card__header">
+            <div>
+              <p class="eyebrow">Instant search</p>
+              <h3>Smart route finder</h3>
+            </div>
+            <span class="tag success">Real time</span>
+          </div>
+          <form id="planner-form" class="planner-form">
+            <div class="field">
+              <label for="from">From</label>
+              <input id="from" name="from" type="text" placeholder="Berlin Hbf" required />
+            </div>
+            <div class="field">
+              <label for="to">To</label>
+              <input id="to" name="to" type="text" placeholder="Amsterdam Centraal" required />
+            </div>
+            <div class="field two-col">
+              <div>
+                <label for="date">Date</label>
+                <input id="date" name="date" type="date" required />
+              </div>
+              <div>
+                <label for="time">Time</label>
+                <input id="time" name="time" type="time" value="09:00" required />
+              </div>
+            </div>
+            <div class="field two-col">
+              <div>
+                <label for="passengers">Travelers</label>
+                <select id="passengers" name="passengers">
+                  <option>1 adult</option>
+                  <option>2 adults</option>
+                  <option>Family (2+2)</option>
+                  <option>Group (5+)</option>
+                </select>
+              </div>
+              <div>
+                <label for="class">Class</label>
+                <select id="class" name="class">
+                  <option>Standard</option>
+                  <option>1st Class</option>
+                  <option>Sleeper</option>
+                </select>
+              </div>
+            </div>
+            <div class="quick-routes">
+              <button type="button" class="chip" data-route="Paris Lyon">Paris → Lyon</button>
+              <button type="button" class="chip" data-route="Vienna Prague">Vienna → Prague</button>
+              <button type="button" class="chip" data-route="Madrid Barcelona">Madrid → Barcelona</button>
+            </div>
+            <button class="cta full" type="submit">Show best options</button>
+          </form>
+          <div class="results" id="results">
+            <p class="muted">Pick a route to see live options.</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="benefits" id="benefits">
+        <div class="section-header">
+          <p class="eyebrow">Why RailEase</p>
+          <h2>From browsing to boarding, everything flows.</h2>
+          <p class="muted">We unify national operators, low-cost lines, and sleeper trains into one effortless experience.</p>
+        </div>
+        <div class="grid">
+          <article class="tile">
+            <div class="icon-circle">🚄</div>
+            <h3>Unified timetables</h3>
+            <p>Instantly compare departures from SNCF, DB, ÖBB, Trenitalia, and more—without juggling tabs.</p>
+          </article>
+          <article class="tile">
+            <div class="icon-circle">📱</div>
+            <h3>Mobile tickets</h3>
+            <p>Board with QR codes saved offline. We highlight coach, seat, and platform info when available.</p>
+          </article>
+          <article class="tile">
+            <div class="icon-circle">🌿</div>
+            <h3>Greener journeys</h3>
+            <p>RailEase prioritizes lower-emission routes first and surfaces night trains to save hotel stays.</p>
+          </article>
+          <article class="tile">
+            <div class="icon-circle">🛟</div>
+            <h3>Delay support</h3>
+            <p>Live alerts, rebooking suggestions, and eligibility checks keep you moving when plans change.</p>
+          </article>
+        </div>
+      </section>
+
+      <section class="planner" id="planner">
+        <div class="section-header">
+          <p class="eyebrow">Itinerary ideas</p>
+          <h2>Popular journeys curated by RailEase</h2>
+          <p class="muted">Swap any city pair to see the best mix of speed, comfort, and sustainability.</p>
+        </div>
+        <div class="routes">
+          <article class="route-card">
+            <div>
+              <p class="eyebrow">Scenic</p>
+              <h3>Zurich → Milan</h3>
+              <p class="muted">Across the Alps via the Gotthard Base Tunnel with panoramic coaches.</p>
+            </div>
+            <div class="route-meta">
+              <span class="pill">3h 17m</span>
+              <span class="pill">Direct EuroCity</span>
+            </div>
+          </article>
+          <article class="route-card">
+            <div>
+              <p class="eyebrow">Sleeper</p>
+              <h3>Berlin → Vienna</h3>
+              <p class="muted">Overnight on Nightjet with private compartments and breakfast onboard.</p>
+            </div>
+            <div class="route-meta">
+              <span class="pill">9h 55m</span>
+              <span class="pill">Eco-fare</span>
+            </div>
+          </article>
+          <article class="route-card">
+            <div>
+              <p class="eyebrow">Express</p>
+              <h3>Paris → London</h3>
+              <p class="muted">Eurostar with flexible exchange, fast-track security, and seat selection.</p>
+            </div>
+            <div class="route-meta">
+              <span class="pill">2h 16m</span>
+              <span class="pill">City-center</span>
+            </div>
+          </article>
+        </div>
+      </section>
+
+      <section class="deals" id="deals">
+        <div class="section-header">
+          <p class="eyebrow">Transparent pricing</p>
+          <h2>Pick the ticket that matches your style</h2>
+          <p class="muted">Every fare shows rebooking rules, carbon impact, and seat availability before checkout.</p>
+        </div>
+        <div class="deal-grid">
+          <article class="deal">
+            <div class="deal__head">
+              <h3>Smart Saver</h3>
+              <span class="tag">Most popular</span>
+            </div>
+            <p class="price">From €29</p>
+            <ul>
+              <li>Early-bird fares with seat suggestion</li>
+              <li>Mobile boarding with platform alerts</li>
+              <li>One-click exchanges when seats remain</li>
+            </ul>
+            <button class="cta full" data-scroll="#planner">Lock seats</button>
+          </article>
+          <article class="deal">
+            <div class="deal__head">
+              <h3>Flex Go</h3>
+              <span class="tag success">Refundable</span>
+            </div>
+            <p class="price">From €59</p>
+            <ul>
+              <li>No-change fees up to departure</li>
+              <li>Station lounge access on select routes</li>
+              <li>Priority support when delays strike</li>
+            </ul>
+            <button class="cta secondary full" data-scroll="#planner">Compare fares</button>
+          </article>
+          <article class="deal">
+            <div class="deal__head">
+              <h3>Night &amp; Sleeper</h3>
+              <span class="tag">Low-carbon</span>
+            </div>
+            <p class="price">From €79</p>
+            <ul>
+              <li>Private compartments or couchettes</li>
+              <li>Breakfast service and wake-up call</li>
+              <li>Arrive downtown, rested and ready</li>
+            </ul>
+            <button class="cta ghost full" data-scroll="#planner">Plan overnight</button>
+          </article>
+        </div>
+      </section>
+
+      <section class="timeline">
+        <div class="section-header">
+          <p class="eyebrow">Boarding-ready</p>
+          <h2>Three simple steps to depart</h2>
+        </div>
+        <div class="steps">
+          <div class="step">
+            <div class="step__icon">1</div>
+            <div>
+              <h3>Search once</h3>
+              <p class="muted">We blend national and regional trains with realtime capacity to surface the best matches.</p>
+            </div>
+          </div>
+          <div class="step">
+            <div class="step__icon">2</div>
+            <div>
+              <h3>Pick &amp; personalize</h3>
+              <p class="muted">Choose seats, add RailEase Care for delay cover, and sync with your calendar.</p>
+            </div>
+          </div>
+          <div class="step">
+            <div class="step__icon">3</div>
+            <div>
+              <h3>Board with confidence</h3>
+              <p class="muted">Offline QR tickets plus push alerts for platform changes keep you moving smoothly.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="faq" id="faq">
+        <div class="section-header">
+          <p class="eyebrow">Questions, answered</p>
+          <h2>Travel calmly knowing the details are covered</h2>
+          <p class="muted">Tap any question to reveal the answer.</p>
+        </div>
+        <div class="accordion" id="accordion">
+          <article class="accordion__item">
+            <header>
+              <h3>Do I need separate accounts for each rail operator?</h3>
+              <span class="chevron">▾</span>
+            </header>
+            <p class="muted">No. RailEase books directly with partner railways while keeping your tickets and receipts in one wallet.</p>
+          </article>
+          <article class="accordion__item">
+            <header>
+              <h3>Can I travel with digital-only tickets?</h3>
+              <span class="chevron">▾</span>
+            </header>
+            <p class="muted">Yes. QR tickets are stored offline and synced to Apple Wallet or Google Wallet where supported.</p>
+          </article>
+          <article class="accordion__item">
+            <header>
+              <h3>How does RailEase handle delays or cancellations?</h3>
+              <span class="chevron">▾</span>
+            </header>
+            <p class="muted">We monitor disruptions in real time, suggest alternates, and surface compensation rights for your fare type.</p>
+          </article>
+        </div>
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      <div>
+        <div class="brand">
+          <div class="brand-mark">R</div>
+          <span class="brand-name">RailEase</span>
+        </div>
+        <p class="muted">Confident, low-carbon journeys across Europe—planned in one place.</p>
+      </div>
+      <div class="footer-links">
+        <a href="#planner">Plan a trip</a>
+        <a href="#deals">See fares</a>
+        <a href="#faq">Help center</a>
+      </div>
+      <p class="muted footer-note">Made with HTML, CSS, and JavaScript—ready to open in your browser.</p>
+    </footer>
+  </div>
+  <script src="script.js"></script>
+</body>
+</html>
